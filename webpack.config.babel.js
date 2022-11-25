@@ -1,6 +1,8 @@
 import path from 'path'
 import config from './compiler.option'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import autoprefixer from "autoprefixer";
+import sass from "sass";
 
 const entries = {};
 const entriesRaw = [...config.js, ...config.sass].map((entry) => {
@@ -23,47 +25,77 @@ entriesRaw.forEach((item) => {
 });
 
 module.exports = {
-    mode : "development",
-    entry: entries,
-    // output : {
-    //     path : path.join(__dirname, '/dist'),
-    //     filename : 'index.bundle.js'
-    // },
-    output: {
-        // eslint-disable-next-line no-undef
-        path: path.resolve(__dirname, "./assets/dist"),
-        globalObject: "this",
-        filename: (pathData) => {
-          return pathData.chunk.name.indexOf("css/") !== -1
-            ? "[name].__unused__.js"
-            : "[name].min.js";
+  mode: "development",
+  entry: entries,
+  // output : {
+  //     path : path.join(__dirname, '/dist'),
+  //     filename : 'index.bundle.js'
+  // },
+  output: {
+    publicPath: '/',
+    path: path.resolve(__dirname, "./assets/dist"),
+    globalObject: "this",
+    filename: (pathData) => {
+      return pathData.chunk.name.indexOf("css/") !== -1
+        ? "[name].__unused__.js"
+        : "[name].min.js";
+    },
+  },
+  devServer: {
+    port: 3010,
+    hot: true,
+    open: true,
+    historyApiFallback: { index: "/", disableDotRule: true }
+  },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            // eslint-disable-next-line no-undef
+            configFile: path.resolve(__dirname, ".babelrc"),
+          },
         },
       },
-    devServer: {
-        port : 3010,
-        hot: true,
-        open: true
-    },
-    module:{
-        rules:[
-            {
-                test: /\.(js|jsx)$/,
-                exclude: /node_modules/,
-                use:{
-                    loader: 'babel-loader'
-                }
+      {
+        test: /\.s[ac]ss$/i,
+        exclude: /node_modules/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: "css-loader",
+            options: {
+              sourceMap: true,
+              url: false,
             },
-            {
-                test: /\.scss$/,
-                use: [
-                    MiniCssExtractPlugin.loader,
-                    'css-loader',
-                    'postcss-loader',
-                    'sass-loader'
-                ]
-            }
-        ]
-    },
-    plugins: [new MiniCssExtractPlugin()],
-    devtool : "source-map"
+          },
+          {
+            loader: "postcss-loader",
+            options: {
+              postcssOptions: {
+                plugins: [autoprefixer],
+              },
+            },
+          },
+          {
+            loader: "sass-loader",
+            options: {
+              sourceMap: true,
+              implementation: sass,
+              sassOptions: {
+                outputStyle: "compressed",
+              },
+            },
+          },
+        ],
+      },
+    ],
+  },
+  plugins: [new MiniCssExtractPlugin({
+    filename: "[name].min.css",
+  })],
+  devtool: "source-map"
 } 

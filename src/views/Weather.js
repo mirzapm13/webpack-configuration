@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react"
 import WeatherCard from "../components/WeatherCard"
+import { useNavigate } from "react-router-dom"
 
 export default function Weather() {
+    const navigate = useNavigate()
+
     const [lat, setLat] = useState(0)
     const [long, setLong] = useState(0)
     const [data, setData] = useState({})
@@ -27,6 +30,7 @@ export default function Weather() {
     return (
         <div className="list-container">
             <WeatherCard weatherData={data} />
+            <button onClick={() => navigate('/welcome')}>Go Back</button>
         </div>
     )
 }

@@ -1,11 +1,12 @@
 import React from 'react';
 import './App.scss';
-import Weather from './views/Weather';
+import { RouterProvider } from 'react-router-dom';
+import router from './router';
 
 function App() {
   return (
     <div className="App">
-      <Weather />
+      <RouterProvider router={router} />
     </div>
   );
 }

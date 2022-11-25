@@ -1,6 +1,7 @@
 import Welcome from "../views/Welcome";
 import Weather from "../views/Weather";
-import { createBrowserRouter, Link, Navigate } from "react-router-dom";
+import MainRoute from "../views/MainRoute";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 
 const router = createBrowserRouter([
     {
@@ -11,12 +12,12 @@ const router = createBrowserRouter([
                 element: <Navigate to="/welcome" />
             },
             {
-                path: "/weather",
-                element: <Weather />
-            },
-            {
                 path: "/welcome",
                 element: <Welcome />
+            },
+            {
+                path: "/weather",
+                element: <Weather />
             }
         ]
     },
