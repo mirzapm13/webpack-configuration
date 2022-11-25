@@ -1,8 +1,12 @@
 import path from 'path'
+import webpack from "webpack";
 import config from './compiler.option'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import { CleanWebpackPlugin } from "clean-webpack-plugin";
+import BrowserSyncPlugin from "browser-sync-webpack-plugin";
 import autoprefixer from "autoprefixer";
 import sass from "sass";
+const { ProgressPlugin } = webpack;
 
 const entries = {};
 const entriesRaw = [...config.js, ...config.sass].map((entry) => {
@@ -55,7 +59,6 @@ module.exports = {
         use: {
           loader: "babel-loader",
           options: {
-            // eslint-disable-next-line no-undef
             configFile: path.resolve(__dirname, ".babelrc"),
           },
         },
@@ -94,8 +97,17 @@ module.exports = {
       },
     ],
   },
-  plugins: [new MiniCssExtractPlugin({
-    filename: "[name].min.css",
-  })],
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: "[name].min.css",
+    }),
+    new CleanWebpackPlugin({
+      protectWebpackAssets: false,
+      cleanOnceBeforeBuildPatterns: ["css/dist/**", "js/dist/**"],
+      cleanAfterEveryBuildPatterns: ["**/*.__unused__.*", "js/*.min.css", "js/*.min.css.map"],
+    }),
+    new BrowserSyncPlugin(config.browserSync),
+    new ProgressPlugin(),
+  ],
   devtool: "source-map"
 } 
